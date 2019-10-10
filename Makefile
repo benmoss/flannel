@@ -69,7 +69,7 @@ ifeq ($(ARCH),amd64)
 endif
 
 ### TESTING
-test: header-check gofmt verify-glide
+test: header-check gofmt
 	# Run the unit tests
 	# NET_ADMIN capacity is required to do some network operation
 	# SYS_ADMIN capacity is required to create network namespace
@@ -98,11 +98,6 @@ header-check:
 # "read" will return a failure return code if there is no output. This is inverted wth the "!"
 gofmt:
 	bash -c '! gofmt -d $(PACKAGES) 2>&1 | read'
-
-# Throw an error if `glide list` finds any errors.
-verify-glide:
-	$(if $(shell which glide),,$(error "glide not found in PATH"))
-	bash -c '! glide list 2>&1 | grep "ERROR"'
 
 gofmt-fix:
 	gofmt -w $(PACKAGES)
@@ -211,12 +206,6 @@ flannel-git:
 	ARCH=s390x REGISTRY=quay.io/coreos/flannel-git make clean dist/flanneld-$(TAG)-s390x.docker docker-push
 
 ### DEVELOPING
-update-glide:
-	# go get -d -u github.com/Masterminds/glide
-	glide update --strip-vendor
-	# go get -d -u github.com/sgotti/glide-vc
-	glide vc --only-code --no-tests
-
 install:
 	# This is intended as just a developer convenience to help speed up non-containerized builds
 	# It is NOT how you install flannel
